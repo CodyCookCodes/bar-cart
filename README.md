@@ -212,3 +212,5 @@ python ingestion/scraper.py --full   # bi-monthly: re-scrapes every recipe to ca
 ## Credits
 
 Recipe data and images from [TheCocktailDB](https://www.thecocktaildb.com/). Official recipes from the [International Bartenders Association](https://iba-world.com/). Both are used for a non-commercial portfolio project; all recipe content belongs to its respective owners.
+## License
+MIT - see [LICENSE](LICENSE).
