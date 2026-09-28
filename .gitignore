@@ -1,0 +1,32 @@
+# secrets (never commit)
+*.p8
+*.pem
+.env
+profiles.yml
+
+# python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+
+# dbt
+target/
+dbt_packages/
+logs/
+.user.yml
+
+# local databases
+*.duckdb
+*.duckdb.wal
+
+# rebuildable scrape cache (keep iba_cocktails.json: it's the change history)
+raw/iba/cards.json
+
+# editors / OS
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store

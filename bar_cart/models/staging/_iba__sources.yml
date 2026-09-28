@@ -1,0 +1,15 @@
+version: 2
+
+sources:
+  - name: iba
+    description: "IBA official cocktails, scraped weekly and loaded by COPY INTO."
+    database: BAR_CART
+    schema: RAW
+    tables:
+      - name: iba_cocktails
+        description: "One row per IBA cocktail (JSON payload), including removed ones."
+        columns:
+          - name: payload
+            description: "Full cocktail record as loaded from iba_cocktails.json."
+            data_tests:
+              - not_null
