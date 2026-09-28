@@ -40,6 +40,10 @@ Under the hood it's an end-to-end ELT pipeline: Python ingestion from two source
 
 ---
 
+**Project board:** https://github.com/users/CodyCookCodes/projects/3
+
+```
+
 ## Architecture
 
 ```
