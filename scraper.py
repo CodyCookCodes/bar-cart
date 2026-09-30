@@ -74,12 +74,11 @@ def get(session: requests.Session, url: str, retries: int = 3) -> requests.Respo
     for attempt in range(1, retries + 1):
         resp = session.get(url, timeout=TIMEOUT)
         if resp.status_code in (429, 500, 502, 503, 504) and attempt < retries:
-            time.sleep(2 ** attempt)
+            time.sleep(2**attempt)
             continue
         time.sleep(PAUSE_SECONDS)
         return resp
     return resp
-
 
 
 # --------------------------------------------------------------------------
@@ -94,12 +93,14 @@ def parse_directory_cards(html: str) -> list[dict]:
         if not href or not name_el:
             continue  # nav/sidebar links, not cocktail cards
         category_el = a.select_one(".cocktail-category")
-        cards.append({
-            "url": href,
-            "slug": slug_from_url(href),
-            "name": clean(name_el.get_text()),
-            "iba_category": clean(category_el.get_text()) if category_el else None,
-        })
+        cards.append(
+            {
+                "url": href,
+                "slug": slug_from_url(href),
+                "name": clean(name_el.get_text()),
+                "iba_category": clean(category_el.get_text()) if category_el else None,
+            }
+        )
     return cards
 
 
@@ -133,8 +134,11 @@ def fetch_all_cards(session: requests.Session) -> dict:
 # --------------------------------------------------------------------------
 def find_section_heading(content: Tag, title: str):
     """Innermost element whose text is exactly the title (headings sit inside wrapper divs)."""
-    matches = [el for el in content.find_all(HEADING_TAGS)
-               if clean(el.get_text()).lower() == title]
+    matches = [
+        el
+        for el in content.find_all(HEADING_TAGS)
+        if clean(el.get_text()).lower() == title
+    ]
     for el in matches:
         if not any(other in el.descendants for other in matches if other is not el):
             return el
@@ -155,8 +159,7 @@ def section_elements(heading: Tag):
 def parse_recipe_html(html: str) -> dict:
     soup = BeautifulSoup(html, "html.parser")
     content = soup.select_one(".entry-content") or soup.find("article") or soup.body
-    result = {"ingredients": [], "method": None, "garnish": None,
-              "parse_warnings": []}
+    result = {"ingredients": [], "method": None, "garnish": None, "parse_warnings": []}
     if content is None:
         result["parse_warnings"].append("no page content found")
         return result
@@ -173,17 +176,23 @@ def parse_recipe_html(html: str) -> dict:
             items = [clean(el.get_text(" ")) for el in elements if el.name == "li"]
             if not items:
                 items = [clean(el.get_text(" ")) for el in elements if el.name == "p"]
-                result["parse_warnings"].append("ingredients had no <li>; used <p> fallback")
+                result["parse_warnings"].append(
+                    "ingredients had no <li>; used <p> fallback"
+                )
             result["ingredients"] = [i for i in items if i]
             if not result["ingredients"]:
-                result["parse_warnings"].append("'ingredients' heading found but section is empty")
+                result["parse_warnings"].append(
+                    "'ingredients' heading found but section is empty"
+                )
         else:
             # Method/garnish can be <p> paragraphs OR <li> bullets (e.g. Dry Martini).
             lines = [clean(el.get_text(" ")) for el in elements]
             text = "\n".join(line for line in lines if line)
             result[title] = text or None
             if not text:
-                result["parse_warnings"].append(f"'{title}' heading found but section is empty")
+                result["parse_warnings"].append(
+                    f"'{title}' heading found but section is empty"
+                )
     return result
 
 
@@ -214,7 +223,13 @@ def save_master(master: dict) -> None:
 
 def merge(master: dict, cards: dict, scraped: dict, run_at: str) -> dict:
     """Apply this week's scrape to the master records. Returns a change summary."""
-    summary = {"added": [], "changed": [], "returned": [], "removed": [], "unchanged": 0}
+    summary = {
+        "added": [],
+        "changed": [],
+        "returned": [],
+        "removed": [],
+        "unchanged": 0,
+    }
 
     for slug, card in cards.items():
         parsed = scraped.get(slug)  # None if this page failed to scrape
@@ -296,19 +311,25 @@ def run_pipeline(full: bool = False):
         cards = fetch_all_cards(session)
 
         if active_before and len(cards) < active_before * MIN_LISTING_RATIO:
-            print(f"\nABORTED: directory listed {len(cards)} drinks but the master has "
-                  f"{active_before} active. Site down or layout changed? Nothing was written.")
+            print(
+                f"\nABORTED: directory listed {len(cards)} drinks but the master has "
+                f"{active_before} active. Site down or layout changed? Nothing was written."
+            )
             return
 
         # Quick check: only open recipe pages for drinks NOT already in the file.
         # --full re-opens every page to catch recipe edits (run it occasionally).
         if full:
             to_scrape = cards
-            print(f"\n{len(cards)} cocktails listed. --full: scraping every recipe page...\n")
+            print(
+                f"\n{len(cards)} cocktails listed. --full: scraping every recipe page...\n"
+            )
         else:
             to_scrape = {slug: c for slug, c in cards.items() if slug not in master}
-            print(f"\n{len(cards)} cocktails listed. {len(cards) - len(to_scrape)} already in "
-                  f"{OUTPUT_FILE}, skipped. Scraping {len(to_scrape)} new...\n")
+            print(
+                f"\n{len(cards)} cocktails listed. {len(cards) - len(to_scrape)} already in "
+                f"{OUTPUT_FILE}, skipped. Scraping {len(to_scrape)} new...\n"
+            )
 
         scraped, failures = {}, []
         for i, (slug, card) in enumerate(to_scrape.items(), 1):
@@ -324,10 +345,16 @@ def run_pipeline(full: bool = False):
     summary = merge(master, cards, scraped, run_at)
     save_master(master)
 
-    warned = [(slug, p["parse_warnings"]) for slug, p in scraped.items() if p["parse_warnings"]]
+    warned = [
+        (slug, p["parse_warnings"])
+        for slug, p in scraped.items()
+        if p["parse_warnings"]
+    ]
     print(f"\n=== Run {run_at} -> {OUTPUT_FILE} ===")
-    print(f"Active: {sum(1 for r in master.values() if r['status'] == 'active')}   "
-          f"Removed (all time): {sum(1 for r in master.values() if r['status'] == 'removed')}")
+    print(
+        f"Active: {sum(1 for r in master.values() if r['status'] == 'active')}   "
+        f"Removed (all time): {sum(1 for r in master.values() if r['status'] == 'removed')}"
+    )
     print(f"Added:     {len(summary['added'])} {summary['added']}")
     print(f"Changed:   {len(summary['changed'])} {summary['changed']}")
     print(f"Returned:  {len(summary['returned'])} {summary['returned']}")
