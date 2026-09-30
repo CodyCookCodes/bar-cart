@@ -36,7 +36,9 @@ import requests
 from bs4 import BeautifulSoup, Tag
 
 BASE_URL = "https://iba-world.com/cocktails/all-cocktails/"
-OUTPUT_FILE = Path("iba_cocktails.json")
+OUTPUT_FILE = (
+    Path(__file__).resolve().parents[1] / "data" / "raw" / "iba_cocktails.json"
+)
 HEADERS = {"User-Agent": "bar-cart-portfolio-scraper/3.0 (personal learning project)"}
 TIMEOUT = 30
 PAUSE_SECONDS = 1.0
