@@ -42,8 +42,6 @@ Under the hood it's an end-to-end ELT pipeline: Python ingestion from two source
 
 **Project board:** https://github.com/users/CodyCookCodes/projects/3
 
-```
-
 ## Architecture
 
 ```
@@ -189,7 +187,10 @@ bar-cart/
 
 **IBA scraper**
 ```bash
-pip install requests beautifulsoup4
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+pre-commit install
 python ingestion/scraper.py          # weekly quick check: adds new drinks, flags removed ones
 python ingestion/scraper.py --full   # bi-monthly: re-scrapes every recipe to catch edits
 ```
@@ -216,5 +217,6 @@ python ingestion/scraper.py --full   # bi-monthly: re-scrapes every recipe to ca
 ## Credits
 
 Recipe data and images from [TheCocktailDB](https://www.thecocktaildb.com/). Official recipes from the [International Bartenders Association](https://iba-world.com/). Both are used for a non-commercial portfolio project; all recipe content belongs to its respective owners.
+
 ## License
 MIT - see [LICENSE](LICENSE).
