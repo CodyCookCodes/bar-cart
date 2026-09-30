@@ -1,0 +1,5 @@
+requests==2.34.2
+beautifulsoup4==4.15.0
+dbt-core==1.12.5
+dbt-snowflake==1.12.1
+pre_commit==4.6.2
