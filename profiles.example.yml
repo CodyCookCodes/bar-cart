@@ -1,0 +1,24 @@
+# Copy to ~/.dbt/profiles.yml and set SNOWFLAKE_ACCOUNT, SNOWFLAKE_USER, SNOWFLAKE_KEY_PATH
+bar_cart:
+  outputs:
+    dev:
+      account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
+      database: BAR_CART
+      private_key_path: "{{ env_var('SNOWFLAKE_KEY_PATH') }}"
+      role: <your_role>
+      schema: DEV
+      threads: 4
+      type: snowflake
+      user: "{{ env_var('SNOWFLAKE_USER') }}"
+      warehouse: <your_warehouse>
+    prod:
+      account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
+      database: BAR_CART
+      private_key_path: "{{ env_var('SNOWFLAKE_KEY_PATH') }}"
+      role: <your_role>
+      schema: ANALYTICS
+      threads: 4
+      type: snowflake
+      user: "{{ env_var('SNOWFLAKE_USER') }}"
+      warehouse: <your_warehouse>
+  target: dev
